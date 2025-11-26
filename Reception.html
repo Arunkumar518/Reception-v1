@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reception Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light theme variables */
+            --primary: #2E86AB;
+            --primary-light: #5FA8D3;
+            --primary-dark: #1B5E7E;
+            --secondary: #A8DADC;
+            --bg-color: #f8f9fa;
+            --text-color: #343a40;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            /* Dark theme variables */
+            --primary: #2E86AB;
+            --primary-light: #7BB8D9;
+            --primary-dark: #1B5E7E;
+            --secondary: #4A8B8D;
+            --bg-color: #121212;
+            --text-color: #E0E0E0;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .nav-links i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .header-left h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .profile {
+            position: relative;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 250px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            display: none;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-info div {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .profile-info span:first-child {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Dashboard Content */
+        .dashboard {
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .search-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .dashboard-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        /* Appointment Form */
+        .appointment-form-container {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .appointment-form h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .existing-patient-info {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .existing-patient-info.show {
+            display: block;
+        }
+
+        .existing-patient-info.dark-mode {
+            background-color: #155724;
+            border-color: #0f5132;
+            color: white;
+        }
+
+        .existing-patient-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .existing-patient-detail {
+            font-size: 0.9rem;
+        }
+
+        .existing-patient-detail label {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Patient List */
+        .patient-list {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patient-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .patient-list-header h2 {
+            color: var(--primary);
+        }
+
+        .patient-cards {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 10px;
+        }
+
+        .patient-card {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .patient-card.selected {
+            border-left: 4px solid #28a745;
+            background-color: var(--primary-light);
+        }
+
+        .patient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .patient-token {
+            font-weight: bold;
+            color: var(--primary);
+            background-color: var(--primary-light);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .patient-details {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .patient-issue {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .patient-id {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-checkin {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-checkin:hover {
+            background-color: #218838;
+        }
+
+        .btn-checkout {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-checkout:hover {
+            background-color: #c82333;
+        }
+
+        .btn-completed {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .patient-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .status-waiting {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .status-completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        /* Details Panel */
+        .details-panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .details-panel.active {
+            display: block;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .details-header h2 {
+            color: var(--primary);
+        }
+
+        .details-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-group label {
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            padding: 8px;
+            background-color: var(--bg-color);
+            border-radius: 5px;
+        }
+
+        .visit-history {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .visit-history h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .visit-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .visit-table th, .visit-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .visit-table th {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        /* Live Time Display */
+        .live-time {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            background-color: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .doctor-grid, .pharmacy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .doctor-card, .pharmacy-card {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .doctor-status, .pharmacy-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-present {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-absent {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .status-available {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .status-busy {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+        }
+    </style>
+
+
+
+</head>
+
+
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-hospital-alt"></i> MediCare</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-page="patients"><i class="fas fa-user-injured"></i> Patients</a></li>
+                <li><a href="#" data-page="doctors"><i class="fas fa-user-md"></i> Doctors</a></li>
+                <li><a href="#" data-page="pharmacy"><i class="fas fa-pills"></i> Pharmacy</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header>
+                <div class="header-left">
+                    <h2 id="pageTitle">Reception Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <button class="mode-toggle" id="modeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="profile">
+                        <button class="profile-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="welcomeUser">Welcome, John Doe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-info">
+                                <div>
+                                    <span>Name:</span>
+                                    <span id="profileName">Arun</span>
+                                </div>
+                                <div>
+                                    <span>Phone:</span>
+                                    <span id="profilePhone">+91 1234567890</span>
+                                </div>
+                                <div>
+                                    <span>Emp Code:</span>
+                                    <span id="profileEmpCode">EMP-2023-001</span>
+                                </div>
+                                <div>
+                                    <span>Email:</span>
+                                    <span id="profileEmail">arun@medicare.com</span>
+                                </div>
+                                <div>
+                                    <span>Department:</span>
+                                    <span id="profileDept">Reception</span>
+                                </div>
+                            </div>
+                            <button class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard" id="dashboardPage">
+                <div class="dashboard-header">
+                    <h1>Today's Appointments</h1>
+                    <div class="current-time" id="currentTime"></div>
+                </div>
+
+                <!-- Success/Error Messages -->
+                <div class="alert alert-success" id="successAlert"></div>
+                <div class="alert alert-error" id="errorAlert"></div>
+
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by token, patient ID, or name...">
+                    <button class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="dashboard-content">
+                    <!-- Appointment Form -->
+                    <div class="appointment-form-container">
+                        <form class="appointment-form" id="appointmentForm">
+                            <h2>New Appointment</h2>
+                            
+                            <!-- Live Time Display -->
+                            <div class="live-time" id="liveTimeDisplay">
+                                Current Time: <span id="liveTime">Loading...</span>
+                            </div>
+
+                            <!-- Existing Patient Info -->
+                            <div class="existing-patient-info" id="existingPatientInfo">
+                                <strong><i class="fas fa-info-circle"></i> Existing Patient Found</strong>
+                                <div class="existing-patient-details" id="existingPatientDetails">
+                                    <!-- Existing patient details will be shown here -->
+                                </div>
+                                <small>You can create a new appointment for this existing patient.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="patientPhone">Phone Number</label>
+                                <input type="tel" id="patientPhone" class="form-control" placeholder="Enter phone number" required>
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="patientName">Patient Name</label>
+                                <input type="text" id="patientName" class="form-control" placeholder="Enter patient name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientAddress">Address</label>
+                                <textarea id="patientAddress" class="form-control" rows="3" placeholder="Enter patient address" required></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patientAge">Age</label>
+                                    <input type="number" id="patientAge" class="form-control" placeholder="Enter age" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientGender">Gender</label>
+                                    <select id="patientGender" class="form-control" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="healthIssue">Health Issue</label>
+                                <textarea id="healthIssue" class="form-control" rows="2" placeholder="Describe health issue" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectDoctor">Select Doctor <small>(Only present doctors shown)</small></label>
+                                <select id="selectDoctor" class="form-control" required>
+                                    <option value="">-- Select Doctor --</option>
+                                    <!-- Doctors will be populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="appointmentDate">Date</label>
+                                    <input type="date" id="appointmentDate" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appointmentTime">Time</label>
+                                    <input type="time" id="appointmentTime" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Appointment Fixed By</label>
+                                <div class="detail-value" id="fixedByEmpCode">EMP-2023-001 - John Doe</div>
+                            </div>
+                            <button type="submit" class="submit-btn" id="submitAppointmentBtn">
+                                <span id="submitBtnText">Create Appointment</span>
+                                <span class="loading" id="submitLoading" style="display: none;"></span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Patient List -->
+                    <div class="patient-list">
+                        <div class="patient-list-header">
+                            <h2>Today's Patients</h2>
+                            <div class="patient-count">Total: <span id="totalPatients">0</span></div>
+                        </div>
+                        <div class="patient-cards" id="patientCards">
+                            <!-- Patient cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="stats">
+                    <div class="stat-card" id="totalAppointmentsCard">
+                        <h3>Total Completed</h3>
+                        <div class="stat-number" id="totalAppointments">0</div>
+                    </div>
+                    <div class="stat-card" id="completedAppointmentsCard">
+                        <h3>Completed Today</h3>
+                        <div class="stat-number" id="completedAppointments">0</div>
+                    </div>
+                    <div class="stat-card" id="pendingAppointmentsCard">
+                        <h3>Pending</h3>
+                        <div class="stat-number" id="pendingAppointments">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Page -->
+            <div class="dashboard" id="patientsPage" style="display: none;">
+                <div class="dashboard-header">
+                    <h1>All Patients</h1>
+                </div>
+
+                <div class="search-container">
+                    <input type="text" class="search-input" id="patientsSearch" placeholder="Search patients by name or ID...">
+                    <button class="search-btn" id="patientsSearchBtn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="patient-cards" id="allPatientsList">
+                    <!-- All patients will be displayed here -->
+                </div>
+
+                <!-- Patient Details Panel - PATIENTS PAGE -->
+                <div class="details-panel active" id="patientsPagePatientDetailsPanel">
+                    <div class="details-header">
+                        <h2>Patient Details</h2>
+                    </div>
+                    <div class="details-content" id="patientsPagePatientDetailsContent">
+                        <!-- Patient details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctors Modal -->
+    <div class="modal" id="doctorsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Doctors Management</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="doctor-grid" id="doctorsGrid">
+                    <!-- Doctors will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pharmacy Modal -->
+    <div class="modal" id="pharmacyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pharmacy Management</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="pharmacy-grid" id="pharmacyGrid">
+                    <!-- Pharmacy staff will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'api call'; // Replace with actual API URL
+        
+        // Current logged-in receptionist (in real app, this would come from backend)
+        const currentReceptionist = {
+            id: 1,
+            name: "Arun",
+            empCode: "EMP-2023-001",
+            phone: "+91 1234567890",
+            email: "arun@medicare.com",
+            department: "Reception"
+        };
+
+        // Global variables
+        let patients = [];
+        let doctors = [];
+        let pharmacyStaff = [];
+        let tokenCounter = 0;
+        let currentExistingPatient = null;
+        let selectedPatientId = null;
+
+        // Helper functions for dates
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // DOM Elements
+        const modeToggle = document.getElementById('modeToggle');
+        const profileBtn = document.querySelector('.profile-btn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const patientCards = document.getElementById('patientCards');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const totalPatients = document.getElementById('totalPatients');
+        const totalAppointments = document.getElementById('totalAppointments');
+        const completedAppointments = document.getElementById('completedAppointments');
+        const pendingAppointments = document.getElementById('pendingAppointments');
+        const currentTime = document.getElementById('currentTime');
+        const pageTitle = document.getElementById('pageTitle');
+        const liveTimeDisplay = document.getElementById('liveTime');
+        const fixedByEmpCode = document.getElementById('fixedByEmpCode');
+        const selectDoctor = document.getElementById('selectDoctor');
+        const phoneError = document.getElementById('phoneError');
+        const patientPhone = document.getElementById('patientPhone');
+        const existingPatientInfo = document.getElementById('existingPatientInfo');
+        const existingPatientDetails = document.getElementById('existingPatientDetails');
+        const submitAppointmentBtn = document.getElementById('submitAppointmentBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+        const submitLoading = document.getElementById('submitLoading');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        
+        // Page elements
+        const dashboardPage = document.getElementById('dashboardPage');
+        const patientsPage = document.getElementById('patientsPage');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        // Details panels
+        const allPatientsList = document.getElementById('allPatientsList');
+        const patientsPagePatientDetailsPanel = document.getElementById('patientsPagePatientDetailsPanel');
+        const patientsPagePatientDetailsContent = document.getElementById('patientsPagePatientDetailsContent');
+        const allPatientsCount = document.getElementById('allPatientsCount');
+        
+        // Modal elements
+        const doctorsModal = document.getElementById('doctorsModal');
+        const pharmacyModal = document.getElementById('pharmacyModal');
+        const doctorsGrid = document.getElementById('doctorsGrid');
+        const pharmacyGrid = document.getElementById('pharmacyGrid');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+
+        // API Functions
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // In real app
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                showError('Failed to connect to server. Please try again.');
+                throw error;
+            }
+        }
+
+        // Load data from backend
+        async function loadInitialData() {
+            try {
+                // Load today's appointments
+                const today = getToday();
+                const appointmentsResponse = await apiCall(`/appointments?date=${today}`);
+                patients = appointmentsResponse.data || [];
+                
+                // Load doctors
+                const doctorsResponse = await apiCall('/doctors');
+                doctors = doctorsResponse.data || [];
+                
+                // Load pharmacy staff
+                const pharmacyResponse = await apiCall('/pharmacy-staff');
+                pharmacyStaff = pharmacyResponse.data || [];
+                
+                // Update UI
+                generatePatientCards();
+                populateDoctorsDropdown();
+                generateDoctorsGrid();
+                generatePharmacyGrid();
+                
+            } catch (error) {
+                // Fallback to sample data if API fails
+                console.log('Using sample data due to API failure');
+                loadSampleData();
+            }
+        }
+
+        // Sample data for demo 
+        function loadSampleData() {
+            patients = [
+                { 
+                    id: 1, 
+                    name: "Arunkumar", 
+                    issue: "Fever and cough", 
+                    status: "pending", 
+                    token: 1, 
+                    patientId: "P2023001", 
+                    phone: "555-0101", 
+                    doctor: "Dr. Siva", 
+                    date: getToday(), 
+                    time: "09:30",
+                    address: "123 Street, City, State",
+                    age: 35,
+                    gender: "Male",
+                    fixedBy: "EMP-2023-001 - Arun",
+                    visits: [
+                        {
+                            date: "2023-11-15",
+                            time: "09:30",
+                            token: 1,
+                            doctor: "Dr. Siva",
+                            issue: "Fever and cough",
+                            status: "pending",
+                            receptionist: "Arun",
+                            billAmount: "₹500"
+                        }
+                    ]
+                },
+                { 
+                    id: 2, 
+                    name: "Devi", 
+                    issue: "Headache", 
+                    status: "pending", 
+                    token: 2, 
+                    patientId: "P2023002", 
+                    phone: "789456123", 
+                    doctor: "Dr. Kumar", 
+                    date: getToday(), 
+                    time: "10:15",
+                    address: "456 Street, City, State",
+                    age: 28,
+                    gender: "Female",
+                    fixedBy: "EMP-2023-001 - Arun",
+                    visits: [
+                        {
+                            date: "2023-11-15",
+                            time: "10:15",
+                            token: 2,
+                            doctor: "Dr. Kumar",
+                            issue: "Headache",
+                            status: "pending",
+                            receptionist: "Arun",
+                            billAmount: "₹350"
+                        }
+                    ]
+                }
+            ];
+
+            doctors = [
+                { id: 1, name: "Dr. Siva", specialization: "Cardiology", status: "present", phone: "123456", email: "siva@medicare.com" },
+                { id: 2, name: "Dr. kumar", specialization: "Neurology", status: "present", phone: "789456", email: "kumar@medicare.com" },
+                { id: 3, name: "Dr. Jack", specialization: "Pediatrics", status: "absent", phone: "456951", email: "jack@medicare.com" },
+                { id: 4, name: "Dr. Sparrow", specialization: "Dermatology", status: "present", phone: "147852", email: "sparrow@medicare.com" }
+            ];
+
+            pharmacyStaff = [
+                { id: 1, name: "Lisa ", role: "Pharmacist", status: "available", phone: "753951", email: "lisa@medicare.com" },
+                { id: 2, name: "Billa", role: "Pharmacy Technician", status: "busy", phone: "852963", email: "billa@medicare.com" },
+                { id: 3, name: "Simpu", role: "Pharmacist", status: "available", phone: "741258", email: "simpu@medicare.com" }
+            ];
+
+            tokenCounter = patients.length > 0 ? Math.max(...patients.map(p => p.token)) : 0;
+            
+            generatePatientCards();
+            populateDoctorsDropdown();
+            generateDoctorsGrid();
+            generatePharmacyGrid();
+        }
+
+        // Check if patient exists by phone
+        async function checkPatientByPhone(phone) {
+            try {
+                const response = await apiCall(`/patients?phone=${phone}`);
+                return response.data || null;
+            } catch (error) {
+                // Fallback to local check if API fails
+                return patients.find(patient => patient.phone === phone) || null;
+            }
+        }
+
+        // Create new patient
+        async function createNewPatient(patientData) {
+            try {
+                const response = await apiCall('/patients', {
+                    method: 'POST',
+                    body: JSON.stringify(patientData)
+                });
+                return response.data;
+            } catch (error) {
+                // Fallback to local creation if API fails
+                const newPatient = {
+                    id: patients.length + 1,
+                    ...patientData,
+                    patientId: 'P' + new Date().getFullYear() + (patients.length + 1).toString().padStart(3, '0')
+                };
+                patients.push(newPatient);
+                return newPatient;
+            }
+        }
+
+        // Create new appointment
+        async function createAppointment(appointmentData) {
+            try {
+                const response = await apiCall('/appointments', {
+                    method: 'POST',
+                    body: JSON.stringify(appointmentData)
+                });
+                return response.data;
+            } catch (error) {
+                // Fallback to local creation if API fails
+                tokenCounter++;
+                const newAppointment = {
+                    id: patients.length + 1,
+                    ...appointmentData,
+                    token: tokenCounter
+                };
+                patients.push(newAppointment);
+                return newAppointment;
+            }
+        }
+
+        // Update patient status
+        async function updatePatientStatus(patientId, status) {
+            try {
+                await apiCall(`/appointments/${patientId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status })
+                });
+            } catch (error) {
+                // Fallback to local update if API fails
+                const patient = patients.find(p => p.id === patientId);
+                if (patient) {
+                    patient.status = status;
+                }
+            }
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successAlert.textContent = message;
+            successAlert.classList.add('show');
+            setTimeout(() => {
+                successAlert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.classList.add('show');
+            setTimeout(() => {
+                errorAlert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Initialize current receptionist data
+        function initializeReceptionistData() {
+            document.getElementById('welcomeUser').textContent = `Welcome, ${currentReceptionist.name}`;
+            document.getElementById('profileName').textContent = currentReceptionist.name;
+            document.getElementById('profilePhone').textContent = currentReceptionist.phone;
+            document.getElementById('profileEmpCode').textContent = currentReceptionist.empCode;
+            document.getElementById('profileEmail').textContent = currentReceptionist.email;
+            document.getElementById('profileDept').textContent = currentReceptionist.department;
+            fixedByEmpCode.textContent = `${currentReceptionist.empCode} - ${currentReceptionist.name}`;
+        }
+
+        // Update live time display
+        function updateLiveTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            liveTimeDisplay.textContent = timeString;
+            
+            // Update appointment time field with current time if it's empty
+            const appointmentTimeField = document.getElementById('appointmentTime');
+            if (!appointmentTimeField.value) {
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                appointmentTimeField.value = `${hours}:${minutes}`;
+            }
+        }
+
+        // Populate doctors dropdown with only present doctors
+        function populateDoctorsDropdown() {
+            selectDoctor.innerHTML = '<option value="">-- Select Doctor --</option>';
+            
+            const presentDoctors = doctors.filter(doctor => doctor.status === 'present');
+            
+            presentDoctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.name} (${doctor.specialization})`;
+                selectDoctor.appendChild(option);
+            });
+            
+            // If no present doctors, show message
+            if (presentDoctors.length === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No doctors present today";
+                option.disabled = true;
+                selectDoctor.appendChild(option);
+            }
+        }
+
+        // Dark/Light Mode Toggle
+        modeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = modeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                existingPatientInfo.classList.add('dark-mode');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                existingPatientInfo.classList.remove('dark-mode');
+            }
+        });
+
+        // Profile Dropdown Toggle
+        profileBtn.addEventListener('click', () => {
+            profileDropdown.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+
+        // Phone number validation and existing patient detection
+        patientPhone.addEventListener('blur', async function() {
+            const phone = this.value.trim();
+            if (phone) {
+                try {
+                    const existingPatient = await checkPatientByPhone(phone);
+                    if (existingPatient) {
+                        // Show existing patient info
+                        currentExistingPatient = existingPatient;
+                        showExistingPatientInfo(existingPatient);
+                        phoneError.classList.remove('show');
+                    } else {
+                        // Hide existing patient info
+                        hideExistingPatientInfo();
+                        currentExistingPatient = null;
+                        phoneError.classList.remove('show');
+                    }
+                } catch (error) {
+                    showError('Failed to check patient information');
+                }
+            } else {
+                hideExistingPatientInfo();
+                currentExistingPatient = null;
+            }
+        });
+
+        // Show existing patient information
+        function showExistingPatientInfo(patient) {
+            existingPatientDetails.innerHTML = `
+                <div class="existing-patient-detail">
+                    <label>Patient ID:</label> ${patient.patientId}
+                </div>
+                <div class="existing-patient-detail">
+                    <label>Name:</label> ${patient.name}
+                </div>
+                <div class="existing-patient-detail">
+                    <label>Age:</label> ${patient.age} years
+                </div>
+                <div class="existing-patient-detail">
+                    <label>Gender:</label> ${patient.gender}
+                </div>
+                <div class="existing-patient-detail">
+                    <label>Address:</label> ${patient.address}
+                </div>
+                <div class="existing-patient-detail">
+                    <label>Total Visits:</label> ${patient.visits ? patient.visits.length : 1}
+                </div>
+            `;
+            
+            // Auto-fill form with existing patient data
+            document.getElementById('patientName').value = patient.name;
+            document.getElementById('patientAddress').value = patient.address;
+            document.getElementById('patientAge').value = patient.age;
+            document.getElementById('patientGender').value = patient.gender;
+            
+            existingPatientInfo.classList.add('show');
+            submitAppointmentBtn.textContent = 'Create Appointment for Existing Patient';
+        }
+
+        // Hide existing patient information
+        function hideExistingPatientInfo() {
+            existingPatientInfo.classList.remove('show');
+            submitAppointmentBtn.textContent = 'Create Appointment';
+        }
+
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.getAttribute('data-page');
+                
+                // Update active nav link
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show selected page
+                dashboardPage.style.display = 'none';
+                patientsPage.style.display = 'none';
+                
+                if (page === 'dashboard') {
+                    dashboardPage.style.display = 'flex';
+                    pageTitle.textContent = 'Reception Dashboard';
+                    generatePatientCards();
+                    populateDoctorsDropdown();
+                } else if (page === 'patients') {
+                    patientsPage.style.display = 'flex';
+                    pageTitle.textContent = 'Patients Management';
+                    generateAllPatientsList();
+                } else if (page === 'doctors') {
+                    pageTitle.textContent = 'Doctors Management';
+                    showDoctorsModal();
+                } else if (page === 'pharmacy') {
+                    pageTitle.textContent = 'Pharmacy Management';
+                    showPharmacyModal();
+                }
+            });
+        });
+
+        // Show Doctors Modal
+        function showDoctorsModal() {
+            generateDoctorsGrid();
+            doctorsModal.classList.add('active');
+        }
+
+        // Show Pharmacy Modal
+        function showPharmacyModal() {
+            generatePharmacyGrid();
+            pharmacyModal.classList.add('active');
+        }
+
+        // Generate Patient Cards for Dashboard
+        function generatePatientCards(patientList = patients) {
+            patientCards.innerHTML = '';
+            
+            // Get today's date in YYYY-MM-DD format
+            const today = getToday();
+            
+            // Filter for today's appointments and sort by token number
+            const todayPatients = patientList.filter(p => p.date === today);
+            const sortedPatients = [...todayPatients].sort((a, b) => a.token - b.token);
+            
+            if (sortedPatients.length === 0) {
+                patientCards.innerHTML = '<div class="no-patients">No appointments for today</div>';
+            } else {
+                sortedPatients.forEach(patient => {
+                    const card = createPatientCard(patient, true);
+                    patientCards.appendChild(card);
+                });
+            }
+            
+            updateStats();
+        }
+
+        // Create a patient card element
+        function createPatientCard(patient, isDashboard = false) {
+            const card = document.createElement('div');
+            card.className = `patient-card ${selectedPatientId === patient.id ? 'selected' : ''}`;
+            card.dataset.id = patient.id;
+            
+            let statusClass = '';
+            let statusText = '';
+            let actionButton = '';
+            
+            switch(patient.status) {
+                case 'pending':
+                    statusClass = 'status-pending';
+                    statusText = 'Pending';
+                    actionButton = `<button class="action-btn btn-checkin" onclick="checkInPatient(${patient.id})">Check In</button>`;
+                    break;
+                case 'waiting':
+                    statusClass = 'status-waiting';
+                    statusText = 'Waiting';
+                    actionButton = `<button class="action-btn btn-checkout" onclick="checkOutPatient(${patient.id})">Check Out</button>`;
+                    break;
+                case 'completed':
+                    statusClass = 'status-completed';
+                    statusText = 'Completed';
+                    actionButton = `<button class="action-btn btn-completed" disabled>Completed</button>`;
+                    break;
+            }
+            
+            card.innerHTML = `
+                <div class="patient-header">
+                    <div class="patient-name">${patient.name}</div>
+                    <div class="patient-token">Token: ${patient.token}</div>
+                </div>
+                <div class="patient-details">
+                    <div class="patient-issue">${patient.issue}</div>
+                    <div class="patient-status ${statusClass}">${statusText}</div>
+                </div>
+                <div class="patient-id">Patient ID: ${patient.patientId} | Doctor: ${patient.doctor}</div>
+                <div class="patient-date">Date: ${formatDate(patient.date)} | Time: ${patient.time}</div>
+                ${isDashboard ? `<div class="patient-actions">${actionButton}</div>` : ''}
+            `;
+            
+            // Add click event to show patient details
+            card.addEventListener('click', () => {
+                if (isDashboard) {
+                    // No patient details in dashboard
+                } else {
+                    showPatientsPagePatientDetails(patient);
+                }
+                // Update selected patient
+                selectedPatientId = patient.id;
+                // Update card selection
+                document.querySelectorAll('.patient-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                card.classList.add('selected');
+            });
+            
+            return card;
+        }
+
+        // Generate All Patients List
+        function generateAllPatientsList() {
+            allPatientsList.innerHTML = '';
+            
+            // Sort patients by name
+            const sortedPatients = [...patients].sort((a, b) => a.name.localeCompare(b.name));
+            
+            if (sortedPatients.length === 0) {
+                allPatientsList.innerHTML = '<div class="no-patients">No patients found</div>';
+            } else {
+                sortedPatients.forEach(patient => {
+                    const card = createPatientCard(patient, false);
+                    allPatientsList.appendChild(card);
+                });
+            }
+            
+            // Update patient count
+            allPatientsCount.textContent = sortedPatients.length;
+            
+            // Show details of first patient by default
+            if (sortedPatients.length > 0 && !selectedPatientId) {
+                showPatientsPagePatientDetails(sortedPatients[0]);
+                selectedPatientId = sortedPatients[0].id;
+            } else if (selectedPatientId) {
+                const selectedPatient = patients.find(p => p.id === selectedPatientId);
+                if (selectedPatient) {
+                    showPatientsPagePatientDetails(selectedPatient);
+                }
+            }
+        }
+
+        // Generate Doctors Grid
+        function generateDoctorsGrid() {
+            doctorsGrid.innerHTML = '';
+            
+            doctors.forEach(doctor => {
+                const card = document.createElement('div');
+                card.className = 'doctor-card';
+                
+                card.innerHTML = `
+                    <h3>${doctor.name}</h3>
+                    <p><strong>Specialization:</strong> ${doctor.specialization}</p>
+                    <p><strong>Phone:</strong> ${doctor.phone}</p>
+                    <p><strong>Email:</strong> ${doctor.email}</p>
+                    <div class="doctor-status ${doctor.status === 'present' ? 'status-present' : 'status-absent'}">
+                        ${doctor.status === 'present' ? 'Present' : 'Absent'}
+                    </div>
+                `;
+                
+                doctorsGrid.appendChild(card);
+            });
+        }
+
+        // Generate Pharmacy Grid
+        function generatePharmacyGrid() {
+            pharmacyGrid.innerHTML = '';
+            
+            pharmacyStaff.forEach(staff => {
+                const card = document.createElement('div');
+                card.className = 'pharmacy-card';
+                
+                card.innerHTML = `
+                    <h3>${staff.name}</h3>
+                    <p><strong>Role:</strong> ${staff.role}</p>
+                    <p><strong>Phone:</strong> ${staff.phone}</p>
+                    <p><strong>Email:</strong> ${staff.email}</p>
+                    <div class="pharmacy-status ${staff.status === 'available' ? 'status-available' : 'status-busy'}">
+                        ${staff.status === 'available' ? 'Available' : 'Busy'}
+                    </div>
+                `;
+                
+                pharmacyGrid.appendChild(card);
+            });
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Show Patient Details in PATIENTS PAGE
+        function showPatientsPagePatientDetails(patient) {
+            patientsPagePatientDetailsContent.innerHTML = `
+                <div class="detail-group">
+                    <label>Patient Name</label>
+                    <div class="detail-value">${patient.name}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Patient ID</label>
+                    <div class="detail-value">${patient.patientId}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Phone Number</label>
+                    <div class="detail-value">${patient.phone}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Age & Gender</label>
+                    <div class="detail-value">${patient.age} years, ${patient.gender}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Address</label>
+                    <div class="detail-value">${patient.address}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Current Issue</label>
+                    <div class="detail-value">${patient.issue}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Assigned Doctor</label>
+                    <div class="detail-value">${patient.doctor}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Appointment Date & Time</label>
+                    <div class="detail-value">${formatDate(patient.date)} at ${patient.time}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Token Number</label>
+                    <div class="detail-value">${patient.token}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Appointment Fixed By</label>
+                    <div class="detail-value">${patient.fixedBy}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Status</label>
+                    <div class="detail-value">
+                        <span class="patient-status ${patient.status === 'pending' ? 'status-pending' : patient.status === 'waiting' ? 'status-waiting' : 'status-completed'}">
+                            ${patient.status === 'pending' ? 'Pending' : patient.status === 'waiting' ? 'Waiting' : 'Completed'}
+                        </span>
+                    </div>
+                </div>
+                <div class="visit-history">
+                    <h3>Visit History</h3>
+                    <table class="visit-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Token</th>
+                                <th>Doctor</th>
+                                <th>Health Issue</th>
+                                <th>Status</th>
+                                <th>Appointment Fixed By</th>
+                                <th>Bill Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${patient.visits ? patient.visits.map(visit => `
+                                <tr>
+                                    <td>${formatDate(visit.date)}</td>
+                                    <td>${visit.time}</td>
+                                    <td>${visit.token}</td>
+                                    <td>${visit.doctor}</td>
+                                    <td>${visit.issue}</td>
+                                    <td>${visit.status}</td>
+                                    <td>${visit.receptionist}</td>
+                                    <td>${visit.billAmount}</td>
+                                </tr>
+                            `).join('') : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const today = getToday();
+            const todayPatients = patients.filter(p => p.date === today);
+            const completedToday = todayPatients.filter(p => p.status === 'completed');
+            const pendingToday = todayPatients.filter(p => p.status === 'pending' || p.status === 'waiting');
+            const allCompleted = patients.filter(p => p.status === 'completed');
+            
+            totalPatients.textContent = todayPatients.length;
+            totalAppointments.textContent = allCompleted.length;
+            completedAppointments.textContent = completedToday.length;
+            pendingAppointments.textContent = pendingToday.length;
+        }
+
+        // Check In Patient
+        async function checkInPatient(patientId) {
+            try {
+                await updatePatientStatus(patientId, 'waiting');
+                generatePatientCards();
+                showSuccess('Patient checked in successfully');
+            } catch (error) {
+                showError('Failed to check in patient');
+            }
+        }
+
+        // Check Out Patient
+        async function checkOutPatient(patientId) {
+            try {
+                await updatePatientStatus(patientId, 'completed');
+                generatePatientCards();
+                showSuccess('Patient checked out successfully');
+            } catch (error) {
+                showError('Failed to check out patient');
+            }
+        }
+
+        // Search functionality for today's appointments
+        function searchPatients() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                generatePatientCards();
+                return;
+            }
+            
+            const today = getToday();
+            const filteredPatients = patients.filter(patient => 
+                patient.date === today && (
+                    patient.token.toString().includes(searchTerm) ||
+                    patient.patientId.toLowerCase().includes(searchTerm) ||
+                    patient.name.toLowerCase().includes(searchTerm)
+                )
+            );
+            
+            generatePatientCards(filteredPatients);
+        }
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            currentTime.textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize receptionist data
+            initializeReceptionistData();
+            
+            // Set up live time updates
+            updateLiveTime();
+            setInterval(updateLiveTime, 1000);
+            
+            // Set today's date as default in the form
+            const today = getToday();
+            document.getElementById('appointmentDate').value = today;
+            
+            // Load initial data
+            await loadInitialData();
+            
+            // Set up event listeners
+            searchBtn.addEventListener('click', searchPatients);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    searchPatients();
+                }
+            });
+            
+            // Close modal buttons
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.classList.remove('active');
+                    });
+                });
+            });
+            
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Update time every second
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+
+        // Form submission
+        appointmentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            submitBtnText.style.display = 'none';
+            submitLoading.style.display = 'inline-block';
+            submitAppointmentBtn.disabled = true;
+            
+            try {
+                const phone = document.getElementById('patientPhone').value.trim();
+                const selectedDoctorId = parseInt(selectDoctor.value);
+                const selectedDoctor = doctors.find(d => d.id === selectedDoctorId);
+                
+                let patientId;
+                let patientData;
+                
+                if (currentExistingPatient) {
+                    // Create appointment for existing patient
+                    patientId = currentExistingPatient.patientId;
+                    patientData = currentExistingPatient;
+                    
+                    // Add new visit to existing patient
+                    if (!patientData.visits) patientData.visits = [];
+                    patientData.visits.push({
+                        date: document.getElementById('appointmentDate').value,
+                        time: document.getElementById('appointmentTime').value,
+                        token: tokenCounter + 1,
+                        doctor: selectedDoctor ? selectedDoctor.name : "Unknown",
+                        issue: document.getElementById('healthIssue').value,
+                        status: 'pending',
+                        receptionist: `${currentReceptionist.empCode} - ${currentReceptionist.name}`,
+                        billAmount: "₹0 (Pending)"
+                    });
+                    
+                } else {
+                    // Create new patient
+                    const newPatientData = {
+                        name: document.getElementById('patientName').value,
+                        phone: phone,
+                        address: document.getElementById('patientAddress').value,
+                        age: document.getElementById('patientAge').value,
+                        gender: document.getElementById('patientGender').value,
+                        fixedBy: `${currentReceptionist.empCode} - ${currentReceptionist.name}`
+                    };
+                    
+                    patientData = await createNewPatient(newPatientData);
+                    patientId = patientData.patientId;
+                    
+                    // Add initial visit
+                    patientData.visits = [{
+                        date: document.getElementById('appointmentDate').value,
+                        time: document.getElementById('appointmentTime').value,
+                        token: tokenCounter + 1,
+                        doctor: selectedDoctor ? selectedDoctor.name : "Unknown",
+                        issue: document.getElementById('healthIssue').value,
+                        status: 'pending',
+                        receptionist: `${currentReceptionist.empCode} - ${currentReceptionist.name}`,
+                        billAmount: "₹0 (Pending)"
+                    }];
+                }
+                
+                // Create appointment
+                const appointmentData = {
+                    patientId: patientId,
+                    patientName: document.getElementById('patientName').value,
+                    issue: document.getElementById('healthIssue').value,
+                    status: 'pending',
+                    doctor: selectedDoctor ? selectedDoctor.name : "Unknown",
+                    date: document.getElementById('appointmentDate').value,
+                    time: document.getElementById('appointmentTime').value,
+                    phone: phone,
+                    address: document.getElementById('patientAddress').value,
+                    age: document.getElementById('patientAge').value,
+                    gender: document.getElementById('patientGender').value,
+                    fixedBy: `${currentReceptionist.empCode} - ${currentReceptionist.name}`
+                };
+                
+                const newAppointment = await createAppointment(appointmentData);
+                
+                // Update local data
+                patients.unshift({
+                    id: newAppointment.id || patients.length + 1,
+                    ...appointmentData,
+                    patientId: patientId,
+                    token: newAppointment.token || tokenCounter + 1,
+                    visits: patientData.visits
+                });
+                
+                tokenCounter++;
+                
+                // Update UI
+                generatePatientCards();
+                
+                // Reset form
+                this.reset();
+                
+                // Set today's date and current time again
+                const today = getToday();
+                document.getElementById('appointmentDate').value = today;
+                document.getElementById('patientGender').value = "";
+                
+                // Clear error message and existing patient info
+                phoneError.classList.remove('show');
+                hideExistingPatientInfo();
+                currentExistingPatient = null;
+                
+                // Show success message
+                showSuccess(`Appointment created successfully! Token: ${newAppointment.token || tokenCounter}, Patient ID: ${patientId}`);
+                
+            } catch (error) {
+                showError('Failed to create appointment. Please try again.');
+            } finally {
+                // Reset button state
+                submitBtnText.style.display = 'inline-block';
+                submitLoading.style.display = 'none';
+                submitAppointmentBtn.disabled = false;
+            }
+        });
+
+        // Simulate token reset at midnight (for demo purposes)
+        function simulateTokenReset() {
+            // This would normally happen at midnight via backend
+            // For demo, we'll just reset tokens if it's a new day
+            const lastReset = localStorage.getItem('lastTokenReset');
+            const today = new Date().toDateString();
+            
+            if (lastReset !== today) {
+                tokenCounter = 0;
+                patients.forEach(patient => {
+                    tokenCounter++;
+                    patient.token = tokenCounter;
+                });
+                localStorage.setItem('lastTokenReset', today);
+                generatePatientCards();
+            }  
+        }
+
+        // Check for token reset on page load
+        simulateTokenReset();
+    </script>
+</body>
+</html>
